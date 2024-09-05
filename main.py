@@ -3,6 +3,7 @@ from tkinter import PhotoImage
 import threading
 import qrcode
 from tkinter import messagebox
+import validators
 class QRGenerator:
     def __init__(self):
         self.root=Tk()
@@ -30,9 +31,15 @@ class QRGenerator:
             threading.Thread(target=self.generate_code).start()
     def generate_code(self):
         input_text= self.input.get()
-        if len(input_text)<10 or (input_text.find('https://')==-1):
-            messagebox.showwarning("Input Error", "Please enter valid URL.")
-            self.button.config(fg='black',state=NORMAL)
+        if not input_text:
+            messagebox.showwarning("Input Error", "Please enter some text.")
+            self.button.config(state=NORMAL)
+            self.generate = False
+            return
+
+        if not validators.url(input_text):
+            messagebox.showwarning("Invalid URL", "Please enter a valid URL.")
+            self.button.config(state=NORMAL)
             self.generate = False
             return
         img = qrcode.make(input_text)
